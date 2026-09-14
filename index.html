@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Speed & Device Inventory System</title>
+    <style>
+        /* Base Styling - Clean White Theme */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #ffffff; /* Main bright background like image_7 */
+            color: #212121; /* Dark text for contrast */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            padding: 40px 15px;
+            line-height: 1.5;
+        }
+        
+        /* Top Navigation/Header (Grey and White like image_8) */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto 30px auto;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+            font-size: 13px;
+            color: #757575;
+        }
+        .nav-left { display: flex; gap: 15px; align-items: center; }
+        .nav-right { color: #007bff; font-weight: bold; cursor: pointer; }
+
+        /* Speedometer Logo (like image_7) */
+        .logo-container { margin-bottom: 20px; }
+        .speed-icon {
+            width: 80px; height: 80px;
+            margin: 0 auto 10px auto;
+            border-radius: 50%;
+            border: 4px solid #e50914; /* Red arc */
+            position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .speed-icon::after {
+            content: '';
+            width: 4px; height: 35px;
+            background: #212121;
+            position: absolute;
+            bottom: 50%; left: 50%;
+            transform: translateX(-50%) rotate(-45deg);
+            transform-origin: bottom center;
+        }
+        .logo-text { font-size: 20px; font-weight: bold; color: #e50914; }
+
+        /* Current Speed Callout (image_7 and image_8 combination) */
+        .callout { font-size: 20px; font-weight: 500; color: #424242; margin-bottom: 30px; }
+
+        /* Fast.com Numerical Counter Area (Bright and Big) */
+        .speed-container { 
+            display: flex; align-items: baseline; justify-content: center; 
+            margin: 20px 0;
+            padding: 20px 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .speed-number { font-size: 130px; font-weight: 900; color: #000000; line-height: 1; }
+        .speed-unit { font-size: 30px; color: #616161; font-weight: 500; margin-left: 10px; }
+        
+        /* Restart Button (like image_7) */
+        .restart-btn {
+            background: transparent; border: 2px solid #bdbdbd;
+            width: 50px; height: 50px; border-radius: 50%;
+            font-size: 24px; color: #757575;
+            cursor: pointer; transition: 0.3s;
+            margin-bottom: 40px;
+        }
+        .restart-btn:hover { border-color: #212121; color: #212121; }
+
+        /* Detailed Network Metrics (Grey Layout, image_7 structure) */
+        .info-grid { 
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            max-width: 900px;
+            margin: 0 auto 50px auto;
+            text-align: left;
+            border: 1px solid #f5f5f5;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .metrics-section { padding: 30px; }
+        .left-metrics { border-right: 1px solid #f5f5f5; }
+        .section-title { font-size: 18px; font-weight: 600; color: #212121; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #f5f5f5; }
+
+        /* Metric Item Styling (image_7 layout) */
+        .metric-item { margin-bottom: 15px; }
+        .metric-label { display: block; font-size: 13px; color: #757575; text-transform: uppercase; margin-bottom: 3px; }
+        .metric-value-large { font-size: 40px; font-weight: 700; color: #212121; line-height: 1; }
+        .metric-unit-small { font-size: 14px; color: #757575; font-weight: 400; margin-left: 3px; }
+        .metric-details-row { display: flex; gap: 40px; }
+
+        /* Public/ISP Details (image_8 list style) */
+        .public-details { font-size: 14px; color: #616161; text-align: left; max-width: 900px; margin: 0 auto 50px auto; display: flex; flex-direction: column; gap: 10px; }
+        .detail-item { display: flex; gap: 10px; align-items: center; }
+        .detail-icon { color: #bdbdbd; font-size: 18px; width: 20px; }
+        .detail-label { color: #757575; }
+        .detail-value { font-weight: 500; color: #212121; }
+
+        /* Combined Actions and Secondary Test */
+        .inventory-action { max-width: 900px; margin: 0 auto; padding: 30px; border-top: 1px solid #e0e0e0; text-align: center; }
+        button { background: #007bff; color: white; border: none; padding: 12px 28px; font-size: 15px; font-weight: bold; border-radius: 25px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button:hover { background: #0056b3; }
+
+        /* Inventory Table Styling */
+        .inventory-section h3 { margin: 30px 0 20px 0; font-size: 18px; color: #007bff; }
+        table { width: 100%; max-width: 900px; margin: 0 auto 50px auto; border-collapse: collapse; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        th, td { padding: 14px 18px; font-size: 14px; text-align: left; border-bottom: 1px solid #eeeeee; }
+        th { background: #f5f5f5; color: #757575; font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        .badge-unknown { background: #e50914; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .badge-ok { background: #2e7d32; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="nav-left">
+            <span>NETWORK</span>
+            <span>|</span>
+            <span>LAN MONITOR</span>
+            <span>|</span>
+            <span>SYSTEM</span>
+        </div>
+        <div class="nav-right">LOGIN</div>
+    </div>
+
+    <!-- Speedometer Logo -->
+    <div class="logo-container">
+        <div class="speed-icon"></div>
+        <div class="logo-text">OLOWO</div>
+    </div>
+
+    <!-- Callout -->
+    <div class="callout">Your Network Speed is</div>
+
+    <!-- Main Speed Display -->
+    <div class="speed-container">
+        <div class="speed-number" id="speedNum">0</div>
+        <span class="speed-unit">Mbps</span>
+    </div>
+
+    <!-- Restart Button -->
+    <button class="restart-btn" onclick="startSpeedTest()">&#8635;</button>
+
+    <!-- Main Network Metrics Info Grid -->
+    <div class="info-grid">
+        <!-- Latency/Ping (Left, structured like image_7) -->
+        <div class="metrics-section left-metrics">
+            <div class="section-title">Latency</div>
+            <div class="metric-details-row">
+                <div class="metric-item">
+                    <label class="metric-label">Unloaded</label>
+                    <span class="metric-value-large" id="pingUnloadedVal">--</span>
+                    <span class="metric-unit-small">ms</span>
+                </div>
+                <div class="metric-item">
+                    <label class="metric-label">Loaded</label>
+                    <span class="metric-value-large" id="pingLoadedVal">--</span>
+                    <span class="metric-unit-small">ms</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Upload Speed (Right) -->
+        <div class="metrics-section">
+            <div class="section-title">Upload</div>
+            <div class="metric-item">
+                <label class="metric-label">Speed</label>
+                <span class="metric-value-large" id="uploadVal">--</span>
+                <span class="metric-unit-small">Mbps</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Public/ISP Details (List style like image_8) -->
+    <div class="public-details">
+        <div class="detail-item">
+            <span class="detail-icon">&#128187;</span>
+            <span class="detail-label">Your Client IP:</span>
+            <span class="detail-value" id="ipVal">102.89.17.238</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-icon">&#127760;</span>
+            <span class="detail-label">Provider / ISP:</span>
+            <span class="detail-value" id="ispVal">MTN Nigeria Ltd</span>
+        </div>
+        <div class="detail-item">
+            <span class="detail-icon">&#128205;</span>
+            <span class="detail-label">Server Location:</span>
+            <span class="detail-value" id="locVal">Lagos, NG</span>
+        </div>
+    </div>
+
+    <!-- Device Inventory Section -->
+    <div class="inventory-action">
+        <h3>Local Device Inventory Monitoring</h3>
+        <button onclick="scanDevices()">Scan Subnet Inventory</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>IP Address</th>
+                    <th>MAC Address</th>
+                    <th>Hostname</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="deviceTable">
+                <tr><td colspan="4" style="color:#757575;">Run scan to inventory connected hardware.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Load Public Network Details on page launch
+        window.onload = async function() {
+            let res = await fetch('/api/network-details');
+            let data = await res.json();
+            document.getElementById('ipVal').innerText = data.ip;
+            document.getElementById('ispVal').innerText = data.isp;
+            document.getElementById('locVal').innerText = data.location;
+            
+            // Automatically trigger the speed test on load, like Fast.com
+            startSpeedTest();
+        };
+
+        // Smooth Numerical Counter Animation
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerText = (progress * (end - start) + start).toFixed(1);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        async function startSpeedTest() {
+            let numObj = document.getElementById('speedNum');
+            numObj.innerText = "0"; // Reset
+            
+            // Call simulated speed test API
+            let res = await fetch('/api/speedtest');
+            let data = await res.json();
+            
+            // Trigger main animation to big number
+            animateValue(numObj, 0, data.download_mbps, 2000);
+            
+            // Update secondary metrics immediately
+            document.getElementById('pingUnloadedVal').innerText = data.ping_ms_unloaded;
+            document.getElementById('pingLoadedVal').innerText = data.ping_ms_loaded;
+            document.getElementById('uploadVal').innerText = data.upload_mbps;
+            document.getElementById('locVal').innerText = data.test_server;
+        }
+
+        async function scanDevices() {
+            let res = await fetch('/api/scan');
+            let data = await res.json();
+            let tbody = document.getElementById('deviceTable');
+            tbody.innerHTML = '';
+            data.devices.forEach(d => {
+                let badge = d.status === 'Unknown/Guest' ? 'badge-unknown' : 'badge-ok';
+                tbody.innerHTML += `<tr>
+                    <td>${d.ip}</td>
+                    <td>${d.mac}</td>
+                    <td>${d.hostname}</td>
+                    <td><span class="${badge}">${d.status}</span></td>
+                </tr>`;
+            });
+        }
+    </script>
+</body>
+</html>
