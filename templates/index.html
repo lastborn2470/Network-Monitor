@@ -4,19 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Network Speed & Device Inventory System</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Base Styling - Clean White Theme */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            background-color: #ffffff; /* Main bright background like image_7 */
-            color: #212121; /* Dark text for contrast */
+            background-color: #ffffff; 
+            color: #212121; 
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
             text-align: center; 
             padding: 40px 15px;
             line-height: 1.5;
         }
         
-        /* Top Navigation/Header (Grey and White like image_8) */
+        /* Top Navigation/Header */
         .top-nav {
             display: flex;
             justify-content: space-between;
@@ -31,13 +32,13 @@
         .nav-left { display: flex; gap: 15px; align-items: center; }
         .nav-right { color: #007bff; font-weight: bold; cursor: pointer; }
 
-        /* Speedometer Logo (like image_7) */
+        /* Speedometer Logo */
         .logo-container { margin-bottom: 20px; }
         .speed-icon {
             width: 80px; height: 80px;
             margin: 0 auto 10px auto;
             border-radius: 50%;
-            border: 4px solid #e50914; /* Red arc */
+            border: 4px solid #e50914;
             position: relative;
             display: flex; align-items: center; justify-content: center;
         }
@@ -52,10 +53,10 @@
         }
         .logo-text { font-size: 20px; font-weight: bold; color: #e50914; }
 
-        /* Current Speed Callout (image_7 and image_8 combination) */
+        /* Current Speed Callout */
         .callout { font-size: 20px; font-weight: 500; color: #424242; margin-bottom: 30px; }
 
-        /* Fast.com Numerical Counter Area (Bright and Big) */
+        /* Fast.com Numerical Counter Area */
         .speed-container { 
             display: flex; align-items: baseline; justify-content: center; 
             margin: 20px 0;
@@ -65,7 +66,7 @@
         .speed-number { font-size: 130px; font-weight: 900; color: #000000; line-height: 1; }
         .speed-unit { font-size: 30px; color: #616161; font-weight: 500; margin-left: 10px; }
         
-        /* Restart Button (like image_7) */
+        /* Restart Button */
         .restart-btn {
             background: transparent; border: 2px solid #bdbdbd;
             width: 50px; height: 50px; border-radius: 50%;
@@ -75,7 +76,7 @@
         }
         .restart-btn:hover { border-color: #212121; color: #212121; }
 
-        /* Detailed Network Metrics (Grey Layout, image_7 structure) */
+        /* Detailed Network Metrics */
         .info-grid { 
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -90,32 +91,33 @@
         .left-metrics { border-right: 1px solid #f5f5f5; }
         .section-title { font-size: 18px; font-weight: 600; color: #212121; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #f5f5f5; }
 
-        /* Metric Item Styling (image_7 layout) */
         .metric-item { margin-bottom: 15px; }
         .metric-label { display: block; font-size: 13px; color: #757575; text-transform: uppercase; margin-bottom: 3px; }
         .metric-value-large { font-size: 40px; font-weight: 700; color: #212121; line-height: 1; }
         .metric-unit-small { font-size: 14px; color: #757575; font-weight: 400; margin-left: 3px; }
         .metric-details-row { display: flex; gap: 40px; }
 
-        /* Public/ISP Details (image_8 list style) */
+        /* Public/ISP Details */
         .public-details { font-size: 14px; color: #616161; text-align: left; max-width: 900px; margin: 0 auto 50px auto; display: flex; flex-direction: column; gap: 10px; }
         .detail-item { display: flex; gap: 10px; align-items: center; }
         .detail-icon { color: #bdbdbd; font-size: 18px; width: 20px; }
         .detail-label { color: #757575; }
         .detail-value { font-weight: 500; color: #212121; }
 
-        /* Combined Actions and Secondary Test */
-        .inventory-action { max-width: 900px; margin: 0 auto; padding: 30px; border-top: 1px solid #e0e0e0; text-align: center; }
-        button { background: #007bff; color: white; border: none; padding: 12px 28px; font-size: 15px; font-weight: bold; border-radius: 25px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        button:hover { background: #0056b3; }
+        /* Sections & Tables */
+        .inventory-action { max-width: 900px; margin: 0 auto 40px auto; padding: 30px; border-top: 1px solid #e0e0e0; text-align: center; }
+        button.action-btn { background: #007bff; color: white; border: none; padding: 12px 28px; font-size: 15px; font-weight: bold; border-radius: 25px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        button.action-btn:hover { background: #0056b3; }
 
-        /* Inventory Table Styling */
-        .inventory-section h3 { margin: 30px 0 20px 0; font-size: 18px; color: #007bff; }
-        table { width: 100%; max-width: 900px; margin: 0 auto 50px auto; border-collapse: collapse; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .inventory-action h3 { margin: 10px 0 20px 0; font-size: 18px; color: #007bff; }
+        table { width: 100%; max-width: 900px; margin: 20px auto 0 auto; border-collapse: collapse; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 14px 18px; font-size: 14px; text-align: left; border-bottom: 1px solid #eeeeee; }
         th { background: #f5f5f5; color: #757575; font-weight: 600; text-transform: uppercase; font-size: 12px; }
         .badge-unknown { background: #e50914; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
         .badge-ok { background: #2e7d32; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        
+        /* Chart Container */
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin: 20px auto; background: #fafafa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; }
     </style>
 </head>
 <body>
@@ -152,7 +154,6 @@
 
     <!-- Main Network Metrics Info Grid -->
     <div class="info-grid">
-        <!-- Latency/Ping (Left, structured like image_7) -->
         <div class="metrics-section left-metrics">
             <div class="section-title">Latency</div>
             <div class="metric-details-row">
@@ -169,7 +170,6 @@
             </div>
         </div>
         
-        <!-- Upload Speed (Right) -->
         <div class="metrics-section">
             <div class="section-title">Upload</div>
             <div class="metric-item">
@@ -180,30 +180,29 @@
         </div>
     </div>
 
-    <!-- Public/ISP Details (List style like image_8) -->
+    <!-- Public/ISP Details -->
     <div class="public-details">
         <div class="detail-item">
             <span class="detail-icon">&#128187;</span>
             <span class="detail-label">Your Client IP:</span>
-            <span class="detail-value" id="ipVal">102.89.17.238</span>
+            <span class="detail-value" id="ipVal">Loading...</span>
         </div>
         <div class="detail-item">
             <span class="detail-icon">&#127760;</span>
             <span class="detail-label">Provider / ISP:</span>
-            <span class="detail-value" id="ispVal">MTN Nigeria Ltd</span>
+            <span class="detail-value" id="ispVal">Loading...</span>
         </div>
         <div class="detail-item">
             <span class="detail-icon">&#128205;</span>
             <span class="detail-label">Server Location:</span>
-            <span class="detail-value" id="locVal">Lagos, NG</span>
+            <span class="detail-value" id="locVal">Loading...</span>
         </div>
     </div>
 
     <!-- Device Inventory Section -->
     <div class="inventory-action">
         <h3>Local Device Inventory Monitoring</h3>
-        <button onclick="scanDevices()">Scan Subnet Inventory</button>
-        
+        <button class="action-btn" onclick="scanDevices()">Scan Subnet Inventory</button>
         <table>
             <thead>
                 <tr>
@@ -219,17 +218,53 @@
         </table>
     </div>
 
+    <!-- Daily Network Trend Chart Section -->
+    <div class="inventory-action">
+        <h3>Daily Network Speed Performance Trend</h3>
+        <div class="chart-container">
+            <canvas id="speedChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Automated Historical Logs Section -->
+    <div class="inventory-action">
+        <h3>Automated Background Network Logs (Saved Records)</h3>
+        <button class="action-btn" onclick="loadLogs()">Refresh Log History</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Download Speed</th>
+                    <th>Upload Speed</th>
+                    <th>Latency</th>
+                </tr>
+            </thead>
+            <tbody id="logsTable">
+                <tr><td colspan="4" style="color:#757575;">Click refresh to view automated background records.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
     <script>
-        // Load Public Network Details on page launch
+        let speedChartInstance = null;
+
+        // Load Real Visitor IP, ISP, and Location directly from the browser
         window.onload = async function() {
-            let res = await fetch('/api/network-details');
-            let data = await res.json();
-            document.getElementById('ipVal').innerText = data.ip;
-            document.getElementById('ispVal').innerText = data.isp;
-            document.getElementById('locVal').innerText = data.location;
+            try {
+                let res = await fetch('https://ipapi.co/json/');
+                let data = await res.json();
+                document.getElementById('ipVal').innerText = data.ip;
+                document.getElementById('ispVal').innerText = data.org || "Public ISP";
+                document.getElementById('locVal').innerText = `${data.city}, ${data.country_name}`;
+            } catch (e) {
+                console.error("Failed to load network details", e);
+                document.getElementById('ipVal').innerText = "Detected via Network";
+                document.getElementById('ispVal').innerText = "Active Connection";
+                document.getElementById('locVal').innerText = "Nigeria";
+            }
             
-            // Automatically trigger the speed test on load, like Fast.com
             startSpeedTest();
+            loadLogs();
         };
 
         // Smooth Numerical Counter Animation
@@ -248,36 +283,115 @@
 
         async function startSpeedTest() {
             let numObj = document.getElementById('speedNum');
-            numObj.innerText = "0"; // Reset
+            numObj.innerText = "0";
             
-            // Call simulated speed test API
-            let res = await fetch('/api/speedtest');
-            let data = await res.json();
-            
-            // Trigger main animation to big number
-            animateValue(numObj, 0, data.download_mbps, 2000);
-            
-            // Update secondary metrics immediately
-            document.getElementById('pingUnloadedVal').innerText = data.ping_ms_unloaded;
-            document.getElementById('pingLoadedVal').innerText = data.ping_ms_loaded;
-            document.getElementById('uploadVal').innerText = data.upload_mbps;
-            document.getElementById('locVal').innerText = data.test_server;
+            try {
+                let res = await fetch('/api/speedtest');
+                let data = await res.json();
+                
+                animateValue(numObj, 0, data.download_mbps, 2000);
+                
+                document.getElementById('pingUnloadedVal').innerText = data.ping_ms_unloaded;
+                document.getElementById('pingLoadedVal').innerText = data.ping_ms_loaded;
+                document.getElementById('uploadVal').innerText = data.upload_mbps;
+            } catch (e) {
+                console.error("Speed test error", e);
+            }
         }
 
         async function scanDevices() {
-            let res = await fetch('/api/scan');
-            let data = await res.json();
-            let tbody = document.getElementById('deviceTable');
-            tbody.innerHTML = '';
-            data.devices.forEach(d => {
-                let badge = d.status === 'Unknown/Guest' ? 'badge-unknown' : 'badge-ok';
-                tbody.innerHTML += `<tr>
-                    <td>${d.ip}</td>
-                    <td>${d.mac}</td>
-                    <td>${d.hostname}</td>
-                    <td><span class="${badge}">${d.status}</span></td>
-                </tr>`;
-            });
+            try {
+                let res = await fetch('/api/scan');
+                let data = await res.json();
+                let tbody = document.getElementById('deviceTable');
+                tbody.innerHTML = '';
+                data.devices.forEach(d => {
+                    let badge = d.status === 'Unknown/Guest' ? 'badge-unknown' : 'badge-ok';
+                    tbody.innerHTML += `<tr>
+                        <td>${d.ip}</td>
+                        <td>${d.mac}</td>
+                        <td>${d.hostname}</td>
+                        <td><span class="${badge}">${d.status}</span></td>
+                    </tr>`;
+                });
+            } catch (e) {
+                console.error("Scan error", e);
+            }
+        }
+
+        // Fetch saved background logs, populate table, and render daily trend chart
+        async function loadLogs() {
+            try {
+                let res = await fetch('/api/logs');
+                let logs = await res.json();
+                let tbody = document.getElementById('logsTable');
+                tbody.innerHTML = '';
+                
+                if (logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="color:#757575;">No background logs recorded yet. Leave the server running to collect records!</td></tr>';
+                    return;
+                }
+
+                // Populate table (newest on top)
+                logs.slice().reverse().forEach(l => {
+                    tbody.innerHTML += `<tr>
+                        <td>${l['Timestamp']}</td>
+                        <td>${l['Download (Mbps)']} Mbps</td>
+                        <td>${l['Upload (Mbps)']} Mbps</td>
+                        <td>${l['Latency (ms)']} ms</td>
+                    </tr>`;
+                });
+
+                // Extract data for the Chart.js daily graph
+                let labels = logs.map(l => l['Timestamp']);
+                let downloadData = logs.map(l => parseFloat(l['Download (Mbps)']));
+                let uploadData = logs.map(l => parseFloat(l['Upload (Mbps)']));
+
+                let ctx = document.getElementById('speedChart').getContext('2d');
+                
+                if (speedChartInstance) {
+                    speedChartInstance.destroy();
+                }
+
+                speedChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Download Speed (Mbps)',
+                                data: downloadData,
+                                borderColor: '#007bff',
+                                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Upload Speed (Mbps)',
+                                data: uploadData,
+                                borderColor: '#2e7d32',
+                                backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' }
+                        },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+
+            } catch (e) {
+                console.error("Logs load error", e);
+            }
         }
     </script>
 </body>
